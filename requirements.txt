@@ -1,4 +1,5 @@
 FLAML
+FLAML[automl]
 h2o
 install-jdk
 matplotlib
