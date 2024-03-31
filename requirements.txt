@@ -1,0 +1,14 @@
+FLAML==2.1.2
+h2o==3.46.0.1
+install-jdk==0.1.0
+matplotlib==3.8.3
+numpy==1.26.4
+pandas==2.2.1
+plotly==5.20.0
+pmdarima==2.0.4
+scikit_learn==1.4.1.post1
+seaborn==0.13.2
+streamlit==1.32.2
+TPOT==0.12.2
+yfinance==0.2.37
+PyPortfolioOpt==1.5.4
