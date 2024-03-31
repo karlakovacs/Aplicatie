@@ -18,8 +18,6 @@ from pypfopt import expected_returns
 from pypfopt import plotting
 import copy
 import plotly.express as px
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 def auto_arima_predictions(df, test_percentage, num_predictions):
     df = df.copy()
@@ -319,12 +317,12 @@ def plot_efficient_frontier_and_max_sharpe(mu, S, selected_risk_free_rate):
 def problema_portofoliului_optim(companii):
     st.subheader("Problema portofoliului optim")
     tickers = st.multiselect('Selectați acțiunile pe care le doriți în portofoliul dvs', companii["Ticker"])
-    start_date = st.date_input("Selectați data de start🕘:", datetime.today())
-    end_date = st.date_input("Selectați data de sfârșit🕔:", datetime.today())
+    start_date_po = st.date_input("Selectați data de start🕘:", datetime.today())
+    end_date_po = st.date_input("Selectați data de sfârșit🕔:", datetime.today())
     selected_risk_free_rate = st.slider("Selectați risk free rate:", min_value=0.01, max_value=0.05, value=0.02,
                                         step=0.01)
     if st.button("Analizati!"):
-        stocks_df = yf.download(tickers, start=start_date, end=end_date)['Adj Close']
+        stocks_df = yf.download(tickers, start=start_date_po, end=end_date_po)['Adj Close']
         st.write(stocks_df.head())
         fig_price = px.line(stocks_df, title='Preturile actiunilor')
         st.plotly_chart(fig_price)
@@ -380,7 +378,7 @@ def main():
     with tab1:
       predictia_preturilor_actiunilor(companii)
     with tab2:
-      problema_portofoliului_optim()
+      problema_portofoliului_optim(companii)
 
 if __name__ == '__main__':
     main()
