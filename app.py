@@ -196,6 +196,8 @@ def predictia_preturilor_actiunilor(companii):
             auto_arima_predictions_df['Date'] = dates
             auto_arima_predictions_df.set_index('Date', inplace=True)
             st.write(f"RMSE: {auto_arima_rmse}")
+            st.write("Predicții")
+            st.write(auto_arima_predictions_df)
             st.write(f"Cel mai bun model: {auto_arima_best_model_name}")
 
             fig = go.Figure()
@@ -219,6 +221,8 @@ def predictia_preturilor_actiunilor(companii):
             dates = pd.to_datetime(dates)
             h2o_predictions_df.index = dates
             st.write(f"RMSE: {h2o_rmse}")
+            st.write("Predicții")
+            st.write(h2o_predictions_df)
             st.write(f"Cel mai bun model: {h2o_best_model_name}")
 
             fig = go.Figure()
@@ -243,6 +247,8 @@ def predictia_preturilor_actiunilor(companii):
             tpot_predictions_df.set_index('Date', inplace=True)
 
             st.write(f"RMSE: {tpot_rmse}")
+            st.write("Predicții")
+            st.write(tpot_predictions_df)
             st.write(f"Cel mai bun model: {tpot_best_model_name}")
 
             fig = go.Figure()
@@ -267,6 +273,8 @@ def predictia_preturilor_actiunilor(companii):
             flaml_predictions_df.set_index('Date', inplace=True)
 
             st.write(f"RMSE: {flaml_rmse}")
+            st.write("Predicții")
+            st.write(flaml_predictions_df)
             st.write(f"Cel mai bun model: {flaml_best_model_name}")
 
             fig = go.Figure()
@@ -288,6 +296,7 @@ def predictia_preturilor_actiunilor(companii):
             'Cel mai bun model': [str(auto_arima_best_model_name), h2o_best_model_name, tpot_best_model_name, flaml_best_model_name]
         }
         df_algoritmi = pd.DataFrame(data)
+        df_algoritmi = df_algoritmi.sort_values(by='RMSE')
         df_algoritmi.index += 1
         st.header("Leaderboard")
         st.write(df_algoritmi)
@@ -302,60 +311,60 @@ def plot_efficient_frontier_and_max_sharpe(mu, S, selected_risk_free_rate):
     rets = w.dot(ef.expected_returns)
     stds = np.sqrt(np.diag(w @ ef.cov_matrix @ w.T))
     sharpes = rets / stds
+    st.header("Frontiera eficientă a portofoliilor")
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=stds, y=rets, mode='markers', marker=dict(color=sharpes, colorscale='viridis_r', size=5),
-                             name='Random Portfolios'))
+                             name='Portofolii aleatoare'))
     fig.add_trace(go.Scatter(x=[std_tangent], y=[ret_tangent], mode='markers', marker=dict(color='red', symbol='star', size=10),
                              name='Max Sharpe'))
-    fig.update_layout(title='Efficient Frontier with Random Portfolios',
-                      xaxis_title='Standard Deviation',
-                      yaxis_title='Expected Return',
+    fig.update_layout(title='Frontiera eficientă a portofoliilor',
+                      xaxis_title='Deviație standard',
+                      yaxis_title='Randament așteptat',
                       legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
     st.plotly_chart(fig)
 
 def problema_portofoliului_optim(companii):
     st.subheader("Problema portofoliului optim")
-    tickers = st.multiselect('Selectați acțiunile pe care le doriți în portofoliul dvs', companii["Ticker"])
+    tickers = st.multiselect('Selectați acțiunile pe care le doriți în portofoliul dvs📊:', companii["Ticker"])
     start_date_po = st.date_input("Selectați data de start🕘:", datetime.today())
     end_date_po = st.date_input("Selectați data de sfârșit🕔:", datetime.today())
-    selected_risk_free_rate = st.slider("Selectați risk free rate:", min_value=0.01, max_value=0.05, value=0.02,
+    if start_date_po > end_date_po: st.error("Data de start trebuie să fie anterioară datei de sfârșit")
+    selected_risk_free_rate = st.slider("Selectați rata fără risc (risk free rate)🧊:", min_value=0.01, max_value=0.05, value=0.02,
                                         step=0.01)
-    if st.button("Analizati!"):
+    if st.button("Analizați!🤓"):
         stocks_df = yf.download(tickers, start=start_date_po, end=end_date_po)['Adj Close']
         st.write(stocks_df.head())
-        fig_price = px.line(stocks_df, title='Preturile actiunilor')
+        fig_price = px.line(stocks_df, title='Prețurile acțiunilor')
         st.plotly_chart(fig_price)
         daily_returns = stocks_df.pct_change().dropna()
-        st.header("Daily returns")
+        st.header("Rentabilitățile zilnice")
         st.write(daily_returns.head())
         corr_df = stocks_df.corr().round(2)
-        st.header("Corelatia dintre stocuri")
-        fig_corr = px.imshow(corr_df, text_auto=True, title='Corelatia dintre stocuri')
+        st.header("Corelația dintre acțiuni")
+        fig_corr = px.imshow(corr_df, text_auto=True, title='Corelația dintre acțiuni')
         st.plotly_chart(fig_corr)
 
         mu = expected_returns.mean_historical_return(stocks_df)
         S = risk_models.sample_cov(stocks_df)
-        st.header("The expected returns of the assets in your portfolio")
+        st.header("Randamentul așteptat al activelor din portofoliul dvs")
         st.write(mu)
         plot_efficient_frontier_and_max_sharpe(mu, S, selected_risk_free_rate)
 
         ef = EfficientFrontier(mu, S)
         ef.max_sharpe(risk_free_rate=0.02)
         weights = ef.clean_weights()
-        st.header("Weights")
-        st.write(weights)
-
+        st.header("Ponderi")
         weights_df = pd.DataFrame.from_dict(weights, orient='index')
         weights_df.columns = ['weights']
         st.write(weights_df)
 
         expected_annual_return, annual_volatility, sharpe_ratio = ef.portfolio_performance()
-        st.header("Portfolio performance")
-        st.write('Expected annual return: {}%'.format((expected_annual_return * 100).round(2)))
-        st.write('Annual volatility: {}%'.format((annual_volatility * 100).round(2)))
-        st.write('Sharpe ratio: {}'.format(sharpe_ratio.round(2)))
+        st.header("Performanța portofoliului")
+        st.write('Randament anual așteptat (expected annual return): {}%'.format((expected_annual_return * 100).round(2)))
+        st.write('Volatilitate anuală (annual volatility): {}%'.format((annual_volatility * 100).round(2)))
+        st.write('Rata Sharpe (Sharpe ratio): {}'.format(sharpe_ratio.round(2)))
 
-        st.header("Optimized Portfolio")
+        st.header("Portofoliu optimizat")
         stocks_df['Optimized Portfolio'] = 0
         for ticker, weight in weights.items():
             stocks_df['Optimized Portfolio'] += stocks_df[ticker] * weight
@@ -371,6 +380,19 @@ def main():
     companii = pd.read_csv("companii.tsv", sep="\t")
     companii.index = range(1, len(companii) + 1)
     st.sidebar.table(companii)
+
+    st.sidebar.subheader("Descrierea bibliotecilor Python folosite pentru predicții")
+    biblioteci = {
+    'Biblioteci': ['AutoARIMA', 'H2O', 'TPOT', 'FLAML'],
+    'Descriere': [
+        'Implementează modele automatice ARIMA pentru prognoza seriilor temporale.',
+        'Platformă de machine learning scalabilă, open-source, cu algoritmi distribuiți.',
+        'Librărie Python de AutoML, bazată pe optimizare evolutivă.',
+        'Bibliotecă de machine learning, furnizând soluții eficiente pentru problemele de regresie și clasificare.'
+    ]
+    }
+    df = pd.DataFrame(biblioteci)
+    st.sidebar.table(biblioteci)
 
     # Main screen
     tab1, tab2 = st.tabs(["Predicția prețurilor acțiunilor📈", "Problema portofoliului optim🗂️"])
