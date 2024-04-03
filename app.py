@@ -189,7 +189,7 @@ def predictia_preturilor_actiunilor(companii):
             st.header("AutoARIMA")
             auto_arima_rmse, auto_arima_predictions_df, auto_arima_best_model_name = auto_arima_predictions(df, test_percentage, num_predictions)
             if option:
-                dates = next_weekdays(end_date, num_predictions)
+                dates = next_weekdays(end_date_stock, num_predictions)
             else:
                 yesterday = datetime.now().date() - timedelta(1)
                 dates = next_weekdays(yesterday, num_predictions)
@@ -214,7 +214,7 @@ def predictia_preturilor_actiunilor(companii):
             st.header("H2O")
             h2o_rmse, h2o_predictions_df, h2o_best_model_name = h2o_predictions(df, lag, test_percentage, num_predictions, seconds_model)
             if option:
-                dates = next_weekdays(end_date, num_predictions)
+                dates = next_weekdays(end_date_stock, num_predictions)
             else:
                 yesterday = datetime.now().date() - timedelta(1)
                 dates = next_weekdays(yesterday, num_predictions)
@@ -239,7 +239,7 @@ def predictia_preturilor_actiunilor(companii):
             st.header("TPOT")
             tpot_rmse, tpot_predictions_df, tpot_best_model_name = tpot_predictions(df, lag, test_percentage, num_predictions, seconds_model)
             if option:
-                dates = next_weekdays(end_date, num_predictions)
+                dates = next_weekdays(end_date_stock, num_predictions)
             else:
                 yesterday = datetime.now().date() - timedelta(1)
                 dates = next_weekdays(yesterday, num_predictions)
@@ -265,7 +265,7 @@ def predictia_preturilor_actiunilor(companii):
             st.header("FLAML")
             flaml_rmse, flaml_predictions_df, flaml_best_model_name = flaml_predictions(df, lag, test_percentage, num_predictions, seconds_model)
             if option:
-                dates = next_weekdays(end_date, num_predictions)
+                dates = next_weekdays(end_date_stock, num_predictions)
             else:
                 yesterday = datetime.now().date() - timedelta(1)
                 dates = next_weekdays(yesterday, num_predictions)
