@@ -142,28 +142,28 @@ def predictia_preturilor_actiunilor(companii):
 
     option = st.checkbox("OPȚIONAL: Selectați perioada pe care doriți să o analizați (DEFAULT: toate datele disponibile despre companie)⌛")
     if companie_selectata and option:
-        start_date = st.date_input("Selectați data de start🕘:", datetime.today())
-        end_date = st.date_input("Selectați data de sfârșit🕔:", datetime.today())
+        start_date_stock = st.date_input("Selectați data de start🕘:", datetime.today())
+        end_date_stock = st.date_input("Selectați data de sfârșit🕔:", datetime.today())
 
         # validare date
         stock_data = yf.Ticker(companie_selectata).history(period="max")
         earliest_date = stock_data.index.min().date()
-        if start_date < earliest_date:
+        if start_date_stock < earliest_date:
             st.error("Data de start trebuie să fie ulterioară datei {}".format(earliest_date))
 
-        if start_date > end_date:
+        if start_date_stock > end_date_stock:
             st.error("Data de start trebuie să fie anterioară datei de sfârșit")
 
         today = datetime.now().date()
-        if end_date >= today:
+        if end_date_stock >= today:
             st.error("Data de sfârșit nu trebuie să fie ulterioară zilei de azi")
 
         diferenta_zile = (end_date - start_date).days
         if diferenta_zile < 7:
             st.error("Datele nu sunt la cel puțin o săptămână distanță")
 
-        if start_date >= earliest_date and start_date <= end_date and end_date < today and diferenta_zile >= 7:
-            df = yf.download(companie_selectata, start=start_date, end=end_date + timedelta(1))
+        if start_date_stock >= earliest_date and start_date_stock <= end_date_stock and end_date_stock < today and diferenta_zile >= 7:
+            df = yf.download(companie_selectata, start=start_date_stock, end=end_date_stock + timedelta(1))
 
     elif companie_selectata:
         df = yf.download(companie_selectata)
@@ -326,8 +326,8 @@ def plot_efficient_frontier_and_max_sharpe(mu, S, selected_risk_free_rate):
 def problema_portofoliului_optim(companii):
     st.subheader("Problema portofoliului optim")
     tickers = st.multiselect('Selectați acțiunile pe care le doriți în portofoliul dvs📊:', companii["Ticker"])
-    start_date_po = st.date_input("Selectați data de start🕘:", datetime.today())
-    end_date_po = st.date_input("Selectați data de sfârșit🕔:", datetime.today())
+    start_date_po = st.date_input("Selectați data de start:", datetime.today())
+    end_date_po = st.date_input("Selectați data de sfârșit:", datetime.today())
     if start_date_po > end_date_po:
         st.error("Data de start trebuie să fie anterioară datei de sfârșit")
     selected_risk_free_rate = st.slider("Selectați rata fără risc (risk free rate)🧊:", min_value=0.01, max_value=0.05, value=0.02,
