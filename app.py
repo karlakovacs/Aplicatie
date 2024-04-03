@@ -328,7 +328,8 @@ def problema_portofoliului_optim(companii):
     tickers = st.multiselect('Selectați acțiunile pe care le doriți în portofoliul dvs📊:', companii["Ticker"])
     start_date_po = st.date_input("Selectați data de start🕘:", datetime.today())
     end_date_po = st.date_input("Selectați data de sfârșit🕔:", datetime.today())
-    if start_date_po > end_date_po: st.error("Data de start trebuie să fie anterioară datei de sfârșit")
+    if start_date_po > end_date_po:
+        st.error("Data de start trebuie să fie anterioară datei de sfârșit")
     selected_risk_free_rate = st.slider("Selectați rata fără risc (risk free rate)🧊:", min_value=0.01, max_value=0.05, value=0.02,
                                         step=0.01)
     if st.button("Analizați!🤓"):
@@ -385,13 +386,14 @@ def main():
     biblioteci = {
     'Biblioteci': ['AutoARIMA', 'H2O', 'TPOT', 'FLAML'],
     'Descriere': [
-        'Implementează modele automatice ARIMA pentru prognoza seriilor temporale.',
+        'Implementează modele automatice ARIMA pentru prognoza seriilor de timp.',
         'Platformă de machine learning scalabilă, open-source, cu algoritmi distribuiți.',
         'Librărie Python de AutoML, bazată pe optimizare evolutivă.',
         'Bibliotecă de machine learning, furnizând soluții eficiente pentru problemele de regresie și clasificare.'
     ]
     }
     df = pd.DataFrame(biblioteci)
+    biblioteci.index = range(1, len(biblioteci) + 1)
     st.sidebar.table(biblioteci)
 
     # Main screen
