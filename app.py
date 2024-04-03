@@ -392,7 +392,7 @@ def main():
         'Bibliotecă de machine learning, furnizând soluții eficiente pentru problemele de regresie și clasificare.'
     ]
     }
-    df = pd.DataFrame(biblioteci)
+    biblioteci = pd.DataFrame(biblioteci)
     biblioteci.index = range(1, len(biblioteci) + 1)
     st.sidebar.table(biblioteci)
 
