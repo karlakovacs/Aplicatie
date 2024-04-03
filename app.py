@@ -359,6 +359,14 @@ def problema_portofoliului_optim(companii):
         weights_df.columns = ['weights']
         st.write(weights_df)
 
+        labels = weights_df.index
+        values = weights_df['weights']
+        fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+        fig.update_traces(hoverinfo='label+percent', textinfo='value', textfont_size=20,
+                  marker=dict(line=dict(color='#000000', width=2)))
+        fig.update_layout(title="Ponderi ale portofoliului optim")
+        st.plotly_chart(fig)
+
         expected_annual_return, annual_volatility, sharpe_ratio = ef.portfolio_performance()
         st.header("Performanța portofoliului")
         st.write('Randament anual așteptat (expected annual return): {}%'.format((expected_annual_return * 100).round(2)))
