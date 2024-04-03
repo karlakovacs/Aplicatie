@@ -158,7 +158,7 @@ def predictia_preturilor_actiunilor(companii):
         if end_date_stock >= today:
             st.error("Data de sfârșit nu trebuie să fie ulterioară zilei de azi")
 
-        diferenta_zile = (end_date - start_date).days
+        diferenta_zile = (end_date_stock - start_date_stock).days
         if diferenta_zile < 7:
             st.error("Datele nu sunt la cel puțin o săptămână distanță")
 
